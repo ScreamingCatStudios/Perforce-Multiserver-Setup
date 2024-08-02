@@ -28,20 +28,20 @@ The `Perforce Setup.ps1` script automates the process of setting up a new Perfor
    - Writes the batch script to a specified location.
    - Adds firewall rules to allow inbound and outbound traffic for the specified port.
 
-### Script Details
+# Script Details
 
-\```powershell
-# Collect user inputs
+\powershell
+## Collect user inputs
 $UniqueName = Read-Host "Enter the Unique Server ID (UniqueName)"
 $RequestedPort = Read-Host "Enter the Port to use (RequestedPort)"
 $ServiceName = "Perforce_$UniqueName"
 
-# Paths for Perforce Server executables
+## Paths for Perforce Server executables
 $p4dPath = "C:\Program Files\Perforce\Server\p4d.exe"
 $p4sPath = "C:\Program Files\Perforce\Server\p4s.exe"
 $svcinstPath = "C:\Program Files\Perforce\Server\svcinst.exe"
 
-# Check if necessary files exist before proceeding
+## Check if necessary files exist before proceeding
 if (-Not (Test-Path $p4dPath)) {
     Write-Host "File $p4dPath does not exist. Exiting script."
     exit
@@ -55,7 +55,7 @@ if (-Not (Test-Path $svcinstPath)) {
     exit
 }
 
-# Check if service exists
+## Check if service exists
 $service = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
 if ($service) {
     Write-Host "Service $ServiceName already exists."
@@ -69,10 +69,10 @@ if ($service) {
     Write-Host "Service $ServiceName stopped and deleted."
 }
 
-# Change to the root directory before deleting
+## Change to the root directory before deleting
 Set-Location -Path "E:\"
 
-# Check if directory exists
+## Check if directory exists
 if (Test-Path $RootDir) {
     Write-Host "Directory $RootDir already exists."
     $confirm = Read-Host "Do you want to delete the existing directory? (Y/N)"
@@ -84,7 +84,7 @@ if (Test-Path $RootDir) {
     Write-Host "Directory $RootDir deleted."
 }
 
-# Create batch script content
+## Create batch script content
 $batchScriptContent = @"
 rem Create the destination directory for the new server.
 rem This directory will contain the executable images and the depots.
@@ -115,23 +115,23 @@ p4 license
 
 "@
 
-# Write batch script to file
+## Write batch script to file
 $batchScriptPath = "E:\setup_perforce_$UniqueName.txt"
 Set-Content -Path $batchScriptPath -Value $batchScriptContent
 Write-Host "Batch script created at $batchScriptPath."
 
-# Add inbound firewall rule
+## Add inbound firewall rule
 New-NetFirewallRule -DisplayName "Allow Inbound $ServiceName" -Direction Inbound -Action Allow -Protocol TCP -LocalPort $RequestedPort
 
-# Add outbound firewall rule
+## Add outbound firewall rule
 New-NetFirewallRule -DisplayName "Allow Outbound $ServiceName" -Direction Outbound -Action Allow -Protocol TCP -LocalPort $RequestedPort
 
 Write-Host "Script written, look in 'E:\' to find it. Service added to the firewall."
 \```
 
-## Supplementary Script
+# Supplementary Script
 
-### Remove Service Script
+## Remove Service Script
 
 The `RemoveService.bat` script facilitates the removal of a specified Windows service. It stops the service if it is running and then deletes it.
 
